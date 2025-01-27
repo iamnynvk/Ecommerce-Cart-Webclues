@@ -12,7 +12,7 @@ import {
   increaseQuantity,
 } from "../slices/cartSlice";
 import Checkout from "../components/Checkout/Checkout";
-import { Searchbar } from "react-native-paper";
+import { ActivityIndicator, Searchbar } from "react-native-paper";
 import { ICartState, IProduct } from "../types";
 
 const Product = () => {
@@ -22,6 +22,7 @@ const Product = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getProductList = async () => {
     try {
@@ -33,6 +34,7 @@ const Product = () => {
     } catch (error) {
       console.log("Error in getting product list", error);
     } finally {
+      setIsLoading(false);
       setRefreshing(false);
     }
   };
@@ -57,6 +59,7 @@ const Product = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
+    setIsLoading(true);
     getProductList();
   };
 
@@ -104,7 +107,7 @@ const Product = () => {
         showsVerticalScrollIndicator={false}
         renderItem={_renderProductList}
         keyExtractor={(item, key) => `${key}`}
-        ListEmptyComponent={<EmptyComponent />}
+        ListEmptyComponent={<EmptyComponent loading={isLoading} />}
         onRefresh={onRefresh}
         refreshing={refreshing}
       />
